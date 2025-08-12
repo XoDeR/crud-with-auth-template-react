@@ -17,11 +17,32 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    const token = jwt.sign({});
-  } catch (error) {}
+    const token = jwt.sign({ id: user.id }, secret, { expiresIn: "3h" });
+    res.status(201).json({ token });
+  } catch (error) {
+    res.status(400).json({ error: "Username already exists or unknown error" });
+  }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
-  } catch (error) {}
+    const { username, password } = req.body;
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user.id }, secret, { expiresIn: "3h" });
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 };
