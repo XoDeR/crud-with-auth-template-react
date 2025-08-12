@@ -11,7 +11,7 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const decoded = jwt.verify(token, secret);
-    req.user = decoded;
+    (req as any).user = decoded;
     next();
   } catch (error) {
     res.status(401).json({ error: "Token is not valid" });
