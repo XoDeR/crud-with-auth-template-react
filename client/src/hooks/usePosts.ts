@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/api";
 
 interface Post {
@@ -23,4 +23,12 @@ export const useCreatePost = () => {};
 
 export const useUpdatePost = () => {};
 
-export const useDeletePost = () => {};
+export const useDeletePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.delete(`/posts/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+};
