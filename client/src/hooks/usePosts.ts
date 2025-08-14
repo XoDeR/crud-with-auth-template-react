@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../api/api";
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-}
+import type { Post } from "../types";
 
 export const usePosts = () => {
   return useQuery<Post[]>({

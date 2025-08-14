@@ -1,5 +1,6 @@
 import { useState } from "react";
-import PostForm from "../components/PostForm";
+import PostCreateForm from "../components/PostCreateForm";
+import PostEditForm from "../components/PostEditForm";
 import PostList from "../components/PostList";
 
 const PostsPage = () => {
@@ -9,9 +10,15 @@ const PostsPage = () => {
     setEditingPostId(postId)
   }
 
+  const handleFormSuccess = () => {
+    setEditingPostId(undefined);
+  }
+
   return (
     <div>
-      <PostForm/>
+      <PostCreateForm onSuccess={handleFormSuccess}/>
+      {/* <PostEditForm postId={editingPostId} onSuccess={handleFormSuccess}/> */}
+      <PostEditForm postId={1} onSuccess={handleFormSuccess}/>
       <hr />
       <PostList onEdit={onEdit}/>
     </div>
