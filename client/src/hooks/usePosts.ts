@@ -17,11 +17,38 @@ export const usePosts = () => {
   });
 };
 
-export const usePost = (id: number) => {};
+export const usePost = (id: number) => {
+  return useQuery<Post>({
+    queryKey: ["posts", id],
+    queryFn: async () => {
+      const { data } = await api.get(`/posts/${id}`);
+      return data;
+    },
+    enabled: !!id,
+  });
+};
 
-export const useCreatePost = () => {};
+export const useCreatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newPost: Partial<Post>) => api.post("/posts", newPost),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+};
 
-export const useUpdatePost = () => {};
+export const useUpdatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (updatedPost: Post) =>
+      api.put(`/posts/${updatedPost.id}`, updatedPost),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", variables.id] });
+    },
+  });
+};
 
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
